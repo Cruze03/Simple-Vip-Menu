@@ -6,7 +6,12 @@
 #include <scp>
 #include <multicolors>
 #include <colors>
-#include <myjailbreak>
+
+#undef REQUIRE_PLUGIN
+#undef REQUIRE_EXTENSIONS
+#tryinclude <myjailbreak>
+#define REQUIRE_EXTENSIONS
+#define REQUIRE_PLUGIN
 
 #pragma newdecls required
 
@@ -14,6 +19,7 @@
 #define SERVERADMINFLAG ADMFLAG_RESERVATION
 
 //Global
+bool MyJBFound;
 char g_sBlockedTags[512][512];
 int g_iBlockedTags = 0;
 bool g_bEnabled = true;
@@ -64,7 +70,7 @@ public Plugin myinfo =
 	name = "[CSGO] Entity VIP System", 
 	author = "Entity", 
 	description = "VIP Features for CSGO", 
-	version = "1.0"
+	version = "1.1"
 };
 
 public void OnPluginStart()
@@ -99,10 +105,12 @@ public void OnPluginStart()
 	
 	HookEvent("player_spawn", OnPlayerSpawn);
 	
-	RegAdminCmd("sm_vip", ShowVIPMenu, ADMFLAG_RESERVATION);
+	RegAdminCmd("sm_vip", ShowVIPMenu, ADMFLAG_ROOT);
 	BlackListAnalyze();
 	
 	AutoExecConfig(true, "entvip");
+	
+	if (FindConVar("sm_myjb_tag") != INVALID_HANDLE) MyJBFound = true; else MyJBFound = false;
 	
 	for (int i = 1; i <= MaxClients; i++)
 	{
@@ -136,8 +144,8 @@ public Action OnPlayerSpawn(Event event, char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	PlayerInformations(client);
-	
-	CreateTimer(0.3, Timer_CheckForEvent_HP, client, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
+
+	if (MyJBFound) CreateTimer(0.3, Timer_CheckForEvent_HP, client, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
 	
 	if (GetConVarInt(g_hHealth) == 1)
 	{
@@ -629,7 +637,7 @@ public Action OnMessageSent(int client, const char[] command, int args)
 	char arg[128];
 	GetCmdArg(1, arg, sizeof(arg));
 	GetCmdArgString(message, sizeof(message));
-	if (IsValidClient(client) && arg[0] != '/')
+	if (IsValidClient(client) && arg[0] != '/' && g_bIsClientVip[client] == true && (!StrEqual(message, "")))
 	{
 		SendMessage(client, message, false);
 		return Plugin_Handled;
@@ -642,7 +650,7 @@ public Action OnMessageSentTeam(int client, const char[] command, int args)
 	char message[1024], arg[128];
 	GetCmdArg(1, arg, sizeof(arg));
 	GetCmdArgString(message, sizeof(message));
-	if (IsValidClient(client) && arg[0] != '/')
+	if (IsValidClient(client) && arg[0] != '/' && g_bIsClientVip[client] == true && (!StrEqual(message, "")))
 	{
 		SendMessage(client, message, true);
 		return Plugin_Handled;
@@ -803,7 +811,7 @@ public void PlayerInformations(int client)
 		GetClientCookie(client, g_hArmorState, tempt, sizeof(tempt));
 		if (StrEqual(tempt, "true")) g_sArmorState[client] = true; else g_sArmorState[client] = false;
 		GetClientCookie(client, g_hRainbowState, templ, sizeof(templ));
-		if (StrEqual(tempt, "true")) g_sRainbowState[client] = true; else g_sRainbowState[client] = false;
+		if (StrEqual(templ, "true")) g_sRainbowState[client] = true; else g_sRainbowState[client] = false;
 		
 		char flag[8];
 		GetConVarString(g_hChatFlag, flag, sizeof(flag));
@@ -883,7 +891,7 @@ public Action OnPlayerThink(int client)
 
 public Action Timer_CheckForEvent_HP(Handle timer, int client)
 {
-	if (IsValidClient(client))
+	if (IsValidClient(client) && MyJBFound)
 	{
 		int cHealth = GetClientHealth(client);
 		if (MyJailbreak_IsEventDayPlanned() == true)
