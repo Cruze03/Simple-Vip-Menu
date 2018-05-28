@@ -110,7 +110,7 @@ public void OnPluginStart()
 	
 	AutoExecConfig(true, "entvip");
 	
-	if (FindConVar("sm_myjb_tag") != INVALID_HANDLE) MyJBFound = true; else MyJBFound = false;
+	if (LibraryExists("myjailbreak")) MyJBFound = true; else MyJBFound = false;
 	
 	for (int i = 1; i <= MaxClients; i++)
 	{
