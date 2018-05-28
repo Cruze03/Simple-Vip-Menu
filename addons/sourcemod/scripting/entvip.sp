@@ -637,7 +637,7 @@ public Action OnMessageSent(int client, const char[] command, int args)
 	char arg[128];
 	GetCmdArg(1, arg, sizeof(arg));
 	GetCmdArgString(message, sizeof(message));
-	if (IsValidClient(client) && arg[0] != '/' && g_bIsClientVip[client] == true && (!StrEqual(message, "")))
+	if (IsValidClient(client) && arg[0] != '/' && g_bIsClientVip[client] == true)
 	{
 		SendMessage(client, message, false);
 		return Plugin_Handled;
@@ -650,7 +650,7 @@ public Action OnMessageSentTeam(int client, const char[] command, int args)
 	char message[1024], arg[128];
 	GetCmdArg(1, arg, sizeof(arg));
 	GetCmdArgString(message, sizeof(message));
-	if (IsValidClient(client) && arg[0] != '/' && g_bIsClientVip[client] == true && (!StrEqual(message, "")))
+	if (IsValidClient(client) && arg[0] != '/' && g_bIsClientVip[client] == true)
 	{
 		SendMessage(client, message, true);
 		return Plugin_Handled;
@@ -666,6 +666,10 @@ stock void SendMessage(int client, char h_strMessage[1024], bool teamchat)
 	GetClientName(client, name, sizeof(name));
 	
 	StripQuotes(h_strMessage);
+	
+	char temp[1024]; temp = h_strMessage;
+	ReplaceString(temp, sizeof(temp), " ", "", false);
+	if (StrEqual(temp, "")) return;
 	
 	int ClientTeam = GetClientTeam(client);
 	if (ClientTeam == 2) TeamColor = "\x09";
