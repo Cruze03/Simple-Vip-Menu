@@ -105,7 +105,7 @@ public void OnPluginStart()
 	
 	HookEvent("player_spawn", OnPlayerSpawn);
 	
-	RegAdminCmd("sm_vip", ShowVIPMenu, ADMFLAG_ROOT);
+	RegAdminCmd("sm_vip", ShowVIPMenu, ADMFLAG_RESERVATION);
 	BlackListAnalyze();
 	
 	AutoExecConfig(true, "entvip");
