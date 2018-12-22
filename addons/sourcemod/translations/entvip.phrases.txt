@@ -34,15 +34,15 @@
 	"BonusHPOFF"
 	{
 		"#format"		"{1:s}"
-		"hu"			"Bónusz HP Kikapcsolva"
-		"en"			"Bonus HP is Disabled"
-		"fr"			"Le Bonus HP est désactivé"
-	}
-	"BonusHPDisabled"
-	{
 		"hu"			"Bónusz {1} HP kikapcsolása"
 		"en"			"Disable {1} HP Bonus"
 		"fr"			"Désactiver {1} Bonus HP"
+	}
+	"BonusHPDisabled"
+	{
+		"hu"			"Bónusz HP Kikapcsolva"
+		"en"			"Bonus HP is Disabled"
+		"fr"			"Le Bonus HP est désactivé"
 	}
 	"BonusArmorON"
 	{
